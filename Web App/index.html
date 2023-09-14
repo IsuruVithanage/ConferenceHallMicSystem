@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>mic off section</title>
+    <link rel="stylesheet" href="mic.css">
+</head>
+
+<body>
+<nav>
+    <ul>
+        <li><a href="#" id="message">WiFi-Connected</a></li>
+        <li><a href="signin.html">Log Out</a></li>
+    </ul>
+</nav>
+<!--main topic-->
+<tr>
+    <td>
+        <h3 class="control" style="top: 70px; position: absolute;">
+            <div class="first">MICROPHONE</div>
+            <div class="sec">CONTROLS</div>
+        </h3>
+    </td>
+    <td>
+        <h3 class="equalizer" style="position: absolute; top: 122px;">
+            <div class="first">AUDIO</div>
+            <div class="sec">EQUALIZER</div>
+        </h3>
+    </td>
+</tr>
+
+<div class="row" style="margin-top: 31px;">
+    <div class="column">
+        <img class="mic" src="unmute.png" alt="Mic1" margin-left="20px" id="mic1">
+    </div>
+    <div class="column">
+        <img class="mic" src="unmute.png" alt="mic2" padding-left="20px" id="mic2">
+    </div>
+    <div class="column">
+        <img class="mic" src="unmute.png" alt="mic3" id="mic3">
+    </div>
+    <div class="column">
+        <img src="speaker%20unmute.png" alt="speaker" padding-left="20px" id="speaker">
+    </div>
+    <div class="column">
+        <button>RESET</button>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" id="slider1" style="margin-left: 33px; ">
+        <span class="slider-value"></span>
+        <span class="slider-name">MIC 1</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" id="slider2" style=" left: -271px">
+        <span class="slider-value" style="margin-left: -271px;">60</span>
+        <span class="slider-name" style="margin-left: -270px;">MIC 2</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" id="slider3" style="margin-left: -499px ">
+        <span class="slider-value" style="margin-left: -343px;"></span>
+        <span class="slider-name" style="margin-left: -328px;">MIC 3</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" id="slider4" style="margin-left: -393px ">
+        <span class="slider-value" style="margin-left: -237px;"></span>
+        <span class="slider-name" style="margin-left: -227px;">MASTER</span>
+    </div>
+
+
+    <div class="slider-wrapper" margin-top="105px">
+        <img src="unmute.png" alt="master mic" class="master" style="width: 25px;margin-left: -55px;margin-top: 147px;">
+        <h5 class="mname">MASTER</h5>
+
+    </div>
+
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" style="margin-left: -40px ">
+        <span class="slider-value" style="margin-left: -37px;"></span>
+        <span class="slider-name" style="margin-left: -35px;">BASS</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" style="margin-left: -215px ">
+        <span class="slider-value" style="margin-left: -121px;"></span>
+        <span class="slider-name" style="margin-left: -114px;">MID</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="60" class="slider" style="margin-left: -210px ">
+        <span class="slider-value" style="margin-left: -119px;"></span>
+        <span class="slider-name" style="margin-left: -113px;">TREBLE</span>
+    </div>
+
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
+<script>
+    //Firebase configurations
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+        apiKey: "AIzaSyB1_GNfIJCKvmulXU8aaLmU2XSzA42Crak",
+        authDomain: "digimic.firebaseapp.com",
+        databaseURL: "https://digimic-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "digimic",
+        storageBucket: "digimic.appspot.com",
+        messagingSenderId: "922524027915",
+        appId: "1:922524027915:web:d88ee17b854a322cce4b0e",
+        measurementId: "G-FY5SGJP38Z"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Get all mic icons with the class name 'mic'
+    const micIcons = document.querySelectorAll('.mic');
+
+    // Get the sliders
+    var slider1 = document.getElementById("slider1");
+    var slider2 = document.getElementById("slider2");
+    var slider3 = document.getElementById("slider4");
+
+    // Get the mic seperatly
+    var mic1 = document.getElementById("mic1");
+    var mic2 = document.getElementById("mic2");
+    var mic3 = document.getElementById("mic3");
+
+    // Previous value of the volume
+    var mic1value1;
+    var mic1value2;
+    var wifiStat;
+
+    var speakerIcon = document.getElementById("speaker");
+
+    // Adding the current volume in to this variables
+    firebase.database().ref("MIC/MIC_ONE").once("value", function (snapshot) {
+        mic1value1 = snapshot.val();
+    });
+    firebase.database().ref("MIC/MIC_TWO").once("value", function (snapshot) {
+        mic1value2 = snapshot.val();
+    });
+
+
+    //Check the wifi
+    const messageElement = document.getElementById("message");
+    function changeWifistat() {
+        firebase.database().ref("MIC/WifiStat").once("value", function (snapshot) {
+            wifiStat = snapshot.val();
+        });
+        if (!wifiStat) {
+            messageElement.textContent = "Wifi-Connected"
+        } else {
+            messageElement.textContent = "Wifi-Disconnected"
+        }
+    }
+
+    // Function to update the value in Firebase and the slider position when mute
+    function mute(micId, path, value, slider) {
+        toggle = !toggle;
+
+        if (toggle) {
+            micId.src = 'unmute.png';
+            if (value===1){
+                firebase.database().ref(path).set(mic1value1);
+            }else {
+                firebase.database().ref(path).set(mic1value2);
+            }
+
+            updateSliderValueSpan(slider);
+        } else {
+            micId.src = 'mute.png';
+            if (value===1){
+                firebase.database().ref(path).once("value", function (snapshot) {
+                    mic1value1 = snapshot.val();
+                });
+                console.log(value);
+            }else {
+                firebase.database().ref(path).once("value", function (snapshot) {
+                    mic1value2 = snapshot.val();
+                });
+                console.log(value);
+            }
+
+            firebase.database().ref(path).set(0);
+
+        }
+    }
+
+    // Function to update the value in Firebase and the slider position
+    function updateValueAndSliderPosition(refPath, sliderElement) {
+        // Get the current slider value
+        var value = parseInt(sliderElement.value);
+
+        // Update the variable value in Firebase
+        firebase.database().ref(refPath).set(value);
+    }
+
+    function updateValueBoth() {
+        // Get the current slider value
+        var value = parseInt(slider3.value);
+
+        // Update the variable value in Firebase
+        firebase.database().ref("MIC/MIC_ONE").set(value);
+        firebase.database().ref("MIC/MIC_TWO").set(value);
+    }
+
+
+
+    // Add a click event listener for mic icons
+    mic1.addEventListener('click', function () {
+        mute(mic1, "MIC/MIC_ONE", 1, slider1);
+    });
+
+    mic2.addEventListener('click', function () {
+        mute(mic2, "MIC/MIC_TWO", 2, slider2);
+    });
+
+
+    // Add a click event listener for speaker
+    let toggle = true;
+    speakerIcon.addEventListener('click', function () {
+        toggle = !toggle;
+
+        if (toggle) {
+            speakerIcon.src = 'speaker mute.png';
+            changeImage();
+        } else {
+            speakerIcon.src = 'speaker unmute.png';
+            changeImage();
+        }
+    });
+
+    const masterIcons = document.querySelectorAll('.master');
+
+    // Iterate through each mic icon and add a click event listener
+    masterIcons.forEach((masterIcons) => {
+        let toggle = true;
+
+        masterIcons.addEventListener('click', function () {
+            toggle = !toggle;
+
+            if (toggle) {
+                masterIcons.src = 'unmute.png';
+                mic1.src = 'unmute.png'
+                mic2.src = 'unmute.png'
+                mic3.src = 'unmute.png'
+                firebase.database().ref("MIC/MIC_ONE").set(mic1value1);
+                firebase.database().ref("MIC/MIC_TWO").set(mic1value2);
+                updateSliderValueSpan(slider1);
+                updateSliderValueSpan(slider2);
+
+
+            } else {
+                masterIcons.src = 'mute.png';
+                mic1.src = 'mute.png'
+                mic2.src = 'mute.png'
+                mic3.src = 'mute.png'
+                firebase.database().ref("MIC/MIC_ONE").once("value", function (snapshot) {
+                    mic1value1 = snapshot.val();
+                });
+                firebase.database().ref("MIC/MIC_TWO").once("value", function (snapshot) {
+                    mic1value2 = snapshot.val();
+                });
+                firebase.database().ref("MIC/MIC_ONE").set(0);
+                firebase.database().ref("MIC/MIC_TWO").set(0);
+            }
+        });
+
+    });
+
+
+    // Function to update the corresponding slider value span
+    function updateSliderValueSpan(sliderElement) {
+        var valueSpan = sliderElement.nextElementSibling;
+        valueSpan.textContent = sliderElement.value;
+    }
+
+
+    // value of the slider
+    window.addEventListener('DOMContentLoaded', () => {
+        const sliders = document.querySelectorAll('input[type="range"]');
+
+
+        sliders.forEach(slider => {
+            const valueLabel = slider.nextElementSibling;
+
+            // Update value label on slider input change
+            slider.addEventListener('input', () => {
+                valueLabel.innerText = slider.value;
+            });
+
+            // Set initial value label
+            valueLabel.innerText = slider.value;
+        });
+
+
+        // Add an event listener for the input event on the slider
+        slider1.addEventListener("input", function () {
+            updateValueAndSliderPosition("MIC/MIC_ONE", slider1);
+        });
+
+        slider2.addEventListener("input", function () {
+            updateValueAndSliderPosition("MIC/MIC_TWO", slider2);
+        });
+
+        slider3.addEventListener("input", function () {
+            updateValueBoth();
+        });
+
+        // Function to update the slider position based on the value
+        function updateSliderPosition(sliderElement, value) {
+            sliderElement.value = value;
+        }
+
+        function listenForChangesAndUpdateSlider(refPath, sliderElement) {
+            firebase.database().ref(refPath).on("value", function (snapshot) {
+                var value = snapshot.val();
+                updateSliderPosition(sliderElement, value);
+                updateSliderValueSpan(sliderElement);
+            });
+        }
+
+
+        // Call the function to start listening for changes and update the slider positions
+        listenForChangesAndUpdateSlider("MIC/MIC_ONE", slider1);
+        listenForChangesAndUpdateSlider("MIC/MIC_TWO", slider2);
+        changeWifistat();
+
+        function setInitialSliderPositions(refPath, sliderElement) {
+            firebase.database().ref(refPath).once("value", function (snapshot) {
+                var value = snapshot.val();
+                updateSliderPosition(sliderElement, value);
+            });
+        }
+
+        setInitialSliderPositions("MIC/MIC_ONE", slider1);
+        setInitialSliderPositions("MIC/MIC_TWO", slider2);
+
+
+    });
+
+
+</script>
+</body>
+
+</html>
