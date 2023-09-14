@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign In</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<style>
+  #main {
+    height: 100vh;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+
+  #left {
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  #right {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  form {
+    width: 55%;
+    height: 50%;
+    position: relative;
+    left: 20%;
+    top: 36%;
+  }
+
+  .form-control {
+    background-color: black; /* Red background with 50% opacity */
+    caret-color: #00ffff;
+    color: white;
+  }
+
+  .form-control:focus {
+    background-color: black;
+    border: 1px solid rgb(0, 255, 255);
+    color: white;
+  }
+
+  .form-label {
+    color: #bbbbbb;
+  }
+
+  #loginBtn {
+    width: 39%;
+    background-color: #000000;
+    border: 1px solid rgb(0, 255, 255);
+    color: rgba(2, 243, 243, 0.99);
+    left: 29%;
+    top: 7%;
+    position: relative;
+  }
+
+  #loginBtn:hover {
+    background-color: #00FFFF;
+    color: #ffffff;
+  }
+
+
+  #conferimg {
+    position: absolute;
+    top: 33%;
+  }
+
+  #log {
+    position: absolute;
+    font-weight: bold;
+    color: #00FFFF;
+    letter-spacing: 0.5rem;
+    left: 13%;
+    top: 22%;
+
+  }
+
+  #message {
+    position: absolute;
+    font-size: 1rem;
+    left: 25%;
+    top: 67%;
+    color: #ffffff;
+  }
+
+  #sigin {
+    position: absolute;
+    font-size: 1rem;
+    left: 59%;
+    top: 67%;
+    color: rgba(0, 218, 218, 0.99);
+  }
+
+  #sigin:hover {
+    cursor: pointer;
+  }
+
+</style>
+<body>
+<div id="main">
+  <div id="left">
+
+    <h1 id="log">MIC SYSTEM</h1>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+      </div>
+      <button type="submit" class="btn btn-primary" id="loginBtn">Log In</button>
+      <h3 id="message">Have an account</h3>
+      <h3 id="sigin" ><a href="login.html" style="color: #00FFFF">Sign In</a></h3>
+    </form>
+  </div>
+
+  <div id="right">
+    <img id="conferimg" src="conf.png" alt="img" width="650">
+
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-database.js"></script>
+<script>
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1_GNfIJCKvmulXU8aaLmU2XSzA42Crak",
+    authDomain: "digimic.firebaseapp.com",
+    databaseURL: "https://digimic-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "digimic",
+    storageBucket: "digimic.appspot.com",
+    messagingSenderId: "922524027915",
+    appId: "1:922524027915:web:d88ee17b854a322cce4b0e",
+    measurementId: "G-FY5SGJP38Z"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  // Get a reference to the Firebase database
+  const database = firebase.database();
+
+  // Handle sign-in form submission
+  const loginForm = document.getElementById("loginForm");
+  const emailInput = document.querySelector("#loginForm .form-control[type='email']");
+  const passwordInput = document.querySelector("#loginForm .form-control[type='password']");
+  const loginButton = document.getElementById("loginBtn");
+
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Get user input
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    // Retrieve user data from Firebase database
+    database.ref("users").once("value", (snapshot) => {
+      const users = snapshot.val();
+
+      // Check if user credentials are valid
+      let validUser = false;
+      for (const userId in users) {
+        const user = users[userId];
+        if (user.email === email && user.password === password) {
+          validUser = true;
+          break;
+        }
+      }
+
+      // Show appropriate message
+      const messageElement = document.getElementById("message");
+      if (validUser) {
+        messageElement.textContent = "Login successful!";
+        window.location.href = "index.html";
+      } else {
+        messageElement.textContent = "Invalid email or password.";
+      }
+
+      // Clear form fields
+      loginForm.reset();
+    })
+  });
+
+
+</script>
+</body>
+</html>
