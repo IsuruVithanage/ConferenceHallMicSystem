@@ -19,8 +19,7 @@ This repository consists of two directories, namely:
 <img width="1512" alt="Screenshot 2023-08-10 at 23 43 28" src="https://github.com/IsuruVithanage/ConferenceHallMicSystem/assets/38922397/c1bdaac4-e795-4758-97eb-6ec084f452dc">
 
 
-## Design
-<picture of 3D design>
+## 3D Design
 ![m3](https://github.com/IsuruVithanage/ConferenceHallMicSystem/assets/38922397/82024462-b4b0-4224-8329-baf95c24bcf0)
 
 
