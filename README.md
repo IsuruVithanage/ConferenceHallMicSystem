@@ -3,7 +3,8 @@ IoT Conference hall mic system using ESP32-WROOM-32 for audio processing where I
 
 <process diagram>
 INMP441 microphone module converts audio signals into I2S signal and transfered to ESP32-WROOM-32 named as Mic-ESP.This Mic-ESP is controlled by web app using a firebase server.Through Firebase,volume of eac mic can be controlled.
-Then this processed I2S signal is transfered to another ESP32-WROOM-32 named as main-controller-ESP.main-controller-ESPoutputs a mixed I2S signal from each channel to MAX98357 module.This Amplifier module amplifies the signal and converted to analog signal and transfered to speaker(impedance>3Ω).
+Then this processed I2S signal is transfered to another ESP32-WROOM-32 named as main-controller-ESP.main-controller-ESP outputs a mixed I2S signal from each channel to MAX98357 module.This Amplifier module amplifies the signal and converted to analog signal and transfered to speaker(impedance>3Ω).
+Audio signal processing comprised digital filtering techniques,Phase Lock Loops and Basic Noise rejection capabilities.
 
 ## Process Diagram
 <img width="1512" alt="Screenshot 2023-09-17 at 21 17 42" src="https://github.com/IsuruVithanage/ConferenceHallMicSystem/assets/38922397/7177f9e1-bc48-4fbd-a73b-5c8a889f59bb">
